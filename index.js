@@ -6,9 +6,6 @@ var _ = require('underscore');
 
 function cache (rootPath, baseData) {
 
-  console.log('rootPath', rootPath);
-  console.log('baseData', baseData);
-
   this.rootPath = rootPath;
   this.fileCache = {};
 
@@ -16,21 +13,20 @@ function cache (rootPath, baseData) {
 
 }
 
-
-var makeTemplate = function (source) {
+cache.prototype.makeTemplate = function (source) {
 
   var template = handlebars.compile(source);
+  var self = this;
 
   return function acceptInput (first, second, third) {
 
-    var output = _.extend({base: this.baseData}, first, second, third);
+    var output = _.extend({}, {base: self.baseData}, first, second, third);
 
     return template(output);
 
   }
 
 }
-
 
 cache.prototype.load = function (filePath) {
 
@@ -53,7 +49,7 @@ cache.prototype.load = function (filePath) {
           chokidar.watch(fullPath).on('change', function (event, path) {
 
             var source = fs.readFileSync(fullPath);
-            var template = makeTemplate(source);
+            var template = self.makeTemplate(source);
 
             self.fileCache[fullPath] = template;
 
@@ -61,10 +57,9 @@ cache.prototype.load = function (filePath) {
 
           var source = fs.readFileSync(fullPath).toString();
 
-          var template = makeTemplate(source);
+          var template = self.makeTemplate(source);
 
           this.fileCache[fullPath] = template;
-
 
         } else {
 
@@ -72,7 +67,7 @@ cache.prototype.load = function (filePath) {
 
         }
 
-        return this.fileCache[fullPath];
+        return self.fileCache[fullPath];
 
       } else {
         return false;
