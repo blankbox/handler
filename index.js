@@ -4,12 +4,15 @@ var chokidar = require('chokidar');
 var handlebars = require('handlebars');
 var _ = require('underscore');
 
-function cache (rootPath) {
+function cache (rootPath, baseData) {
 
   console.log('rootPath', rootPath);
+  console.log('baseData', baseData);
 
   this.rootPath = rootPath;
   this.fileCache = {};
+
+  this.baseData = baseData;
 
 }
 
@@ -20,7 +23,7 @@ var makeTemplate = function (source) {
 
   return function acceptInput (first, second, third) {
 
-    var output = _.extend({}, first, second, third);
+    var output = _.extend({base: baseData}, first, second, third);
 
     return template(output);
 
@@ -84,6 +87,6 @@ cache.prototype.load = function (filePath) {
 
 };
 
-module.exports = function (rootPath) {
-  return new cache(rootPath);
+module.exports = function (rootPath, baseData) {
+  return new cache(rootPath, baseData);
 };
