@@ -23,7 +23,7 @@ var makeTemplate = function (source) {
 
   return function acceptInput (first, second, third) {
 
-    var output = _.extend({base: baseData}, first, second, third);
+    var output = _.extend({base: this.baseData}, first, second, third);
 
     return template(output);
 
